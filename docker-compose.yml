@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  # --- SECRET MANAGEMENT ---
+  vault:
+    image: hashicorp/vault:latest
+    container_name: vault
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "root" # For dev ease; change for prod
+      VAULT_ADDR: "http://0.0.0.0:8200"
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - vault_data:/vault/file
+    networks:
+      - devops_net
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- CONTAINER MANAGEMENT ---
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - devops_net
+    depends_on:
+      - vault
+
+  # --- REVERSE PROXY ---
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - devops_net
+    depends_on:
+      - vault
+
+  # --- INFRASTRUCTURE AUTOMATION ---
+  semaphore:
+    image: semaphoreui/semaphore:latest
+    container_name: semaphore
+    ports:
+      - "3000:3000"
+    environment:
+      - SEMAPHORE_DB_USER=semaphore
+      - SEMAPHORE_DB_PASS=semaphore
+      - SEMAPHORE_DB_HOST=semaphore-db
+      - SEMAPHORE_DB_PORT=5432
+      - SEMAPHORE_DB_DIALECT=postgres
+      - SEMAPHORE_DB=semaphore
+      - SEMAPHORE_ADMIN_PASSWORD=admin
+      - SEMAPHORE_ADMIN_NAME=admin
+      - SEMAPHORE_ADMIN_EMAIL=admin@example.com
+      - SEMAPHORE_ADMIN_USERNAME=admin
+    networks:
+      - devops_net
+    depends_on:
+      - semaphore-db
+      - vault
+
+  semaphore-db:
+    image: postgres:15-alpine
+    container_name: semaphore-db
+    environment:
+      - POSTGRES_USER=semaphore
+      - POSTGRES_PASSWORD=semaphore
+      - POSTGRES_DB=semaphore
+    volumes:
+      - semaphore_db_data:/var/lib/postgresql/data
+    networks:
+      - devops_net
+
+networks:
+  devops_net:
+    driver: bridge
+
+volumes:
+  vault_data:
+  portainer_data:
+  npm_data:
+  npm_letsencrypt:
+  semaphore_db_data:
