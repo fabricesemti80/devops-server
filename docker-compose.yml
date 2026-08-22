@@ -23,19 +23,36 @@ services:
       retries: 5
 
   # --- KNOWLEDGE BASE ---
-  wiki:
-    image: linuxserver/dokuwiki:latest
-    container_name: wiki
+  wikijs:
+    image: requarks/wiki:2
+    container_name: wikijs
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/London
+      - DB_TYPE=postgres
+      - DB_HOST=wikijs-db
+      - DB_PORT=5432
+      - DB_USER=wikijs
+      - DB_PASS=wikijs_pass
+      - DB_NAME=wikijs
     volumes:
-      - wiki_data:/config
+      - wikijs_data:/var/wiki/data
     networks:
       - devops_net
+    ports:
+      - "3000:3000"
     depends_on:
-      - vault
+      - wikijs-db
+
+  wikijs-db:
+    image: postgres:15-alpine
+    container_name: wikijs-db
+    environment:
+      - POSTGRES_USER=wikijs
+      - POSTGRES_PASSWORD=wikijs_pass
+      - POSTGRES_DB=wikijs
+    volumes:
+      - wikijs_db_data:/var/lib/postgresql/data
+    networks:
+      - devops_net
 
   # --- CONTAINER MANAGEMENT ---
   portainer:
@@ -112,4 +129,5 @@ volumes:
   npm_data:
   npm_letsencrypt:
   semaphore_db_data:
-  wiki_data:
+  wikijs_data:
+  wikijs_db_data:
