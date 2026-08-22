@@ -7,6 +7,7 @@ A pragmatic, quick-start DevOps management server.
 - **Ansible + Semaphore**: Infrastructure orchestration and automation.
 - **Nginx Proxy Manager**: Reverse proxy and SSL management.
 - **Portainer**: Container management UI.
+- **DokuWiki**: Markdown-based documentation for guides and non-technical users.
 
 ## Architecture Note
 The goal is to minimize environment variables in the Compose files. Vault is the root of trust. While Docker Compose doesn't natively "pull" secrets from Vault at runtime without a sidecar or init-container (like Vault Agent), this setup provides the foundation for using Vault as the source of truth.

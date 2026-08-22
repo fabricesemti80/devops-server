@@ -22,6 +22,21 @@ services:
       timeout: 5s
       retries: 5
 
+  # --- KNOWLEDGE BASE ---
+  wiki:
+    image: linuxserver/dokuwiki:latest
+    container_name: wiki
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    volumes:
+      - wiki_data:/config
+    networks:
+      - devops_net
+    depends_on:
+      - vault
+
   # --- CONTAINER MANAGEMENT ---
   portainer:
     image: portainer/portainer-ce:latest
@@ -97,3 +112,4 @@ volumes:
   npm_data:
   npm_letsencrypt:
   semaphore_db_data:
+  wiki_data:
