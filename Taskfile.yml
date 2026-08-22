@@ -1,0 +1,42 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task: help
+
+  help:
+    desc: Print a list of available tasks
+    cmds:
+      - task --list
+
+  up:
+    desc: Start the stack in detached mode
+    cmds:
+      - docker compose up -d
+
+  down:
+    desc: Stop and remove containers
+    cmds:
+      - docker compose down
+
+  restart:
+    desc: Restart the stack
+    cmds:
+      - task: down
+      - task: up
+
+  logs:
+    desc: Tail logs for the entire stack
+    cmds:
+      - docker compose logs -f
+
+  vault-init:
+    desc: Initialize HashiCorp Vault
+    cmds:
+      - docker exec vault vault operator init
+
+  vault-unseal:
+    desc: Unseal Vault (requires keys from init)
+    cmds:
+      - docker exec vault vault operator unseal

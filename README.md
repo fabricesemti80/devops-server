@@ -2,17 +2,35 @@
 
 A pragmatic, quick-start DevOps management server.
 
+## Quick Start
+
+### 1. Install Go Task (on Ubuntu)
+Task is the automation runner for this repo.
+```bash
+sh -c "$(curl -sL https://taskfile.dev/install.sh)"
+```
+
+### 2. Environment Setup
+Copy the example environment file and update your secrets:
+```bash
+cp .env.example .env
+nano .env
+```
+
+### 3. Deploy
+```bash
+task up
+```
+
+## Operations
+- `task up` - Start the stack
+- `task down` - Stop the stack
+- `task logs` - View logs
+- `task vault-init` - Initialize Vault (first run only)
+
 ## Components
 - **HashiCorp Vault**: Central secret management.
 - **Ansible + Semaphore**: Infrastructure orchestration and automation.
 - **Nginx Proxy Manager**: Reverse proxy and SSL management.
 - **Portainer**: Container management UI.
-- **Wiki.js**: Git-backed documentation hub. Supports visual editing and automatic sync with the GitHub repo.
-
-## Architecture Note
-The goal is to minimize environment variables in the Compose files. Vault is the root of trust. While Docker Compose doesn't natively "pull" secrets from Vault at runtime without a sidecar or init-container (like Vault Agent), this setup provides the foundation for using Vault as the source of truth.
-
-## Getting Started
-1. `docker compose -f docker-compose.yml up -d`
-2. Initialize Vault: `docker exec vault vault operator init`
-3. Save the unseal keys and root token.
+- **Wiki.js**: Git-backed documentation hub.

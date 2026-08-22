@@ -8,7 +8,7 @@ services:
     ports:
       - "8200:8200"
     environment:
-      VAULT_DEV_ROOT_TOKEN_ID: "root" # For dev ease; change for prod
+      VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_ROOT_TOKEN}
       VAULT_ADDR: "http://0.0.0.0:8200"
     cap_add:
       - IPC_LOCK
@@ -30,9 +30,9 @@ services:
       - DB_TYPE=postgres
       - DB_HOST=wikijs-db
       - DB_PORT=5432
-      - DB_USER=wikijs
-      - DB_PASS=wikijs_pass
-      - DB_NAME=wikijs
+      - DB_USER=${WIKI_DB_USER}
+      - DB_PASS=${WIKI_DB_PASS}
+      - DB_NAME=${WIKI_DB_NAME}
     volumes:
       - wikijs_data:/var/wiki/data
     networks:
@@ -46,9 +46,9 @@ services:
     image: postgres:15-alpine
     container_name: wikijs-db
     environment:
-      - POSTGRES_USER=wikijs
-      - POSTGRES_PASSWORD=wikijs_pass
-      - POSTGRES_DB=wikijs
+      - POSTGRES_USER=${WIKI_DB_USER}
+      - POSTGRES_PASSWORD=${WIKI_DB_PASS}
+      - POSTGRES_DB=${WIKI_DB_NAME}
     volumes:
       - wikijs_db_data:/var/lib/postgresql/data
     networks:
@@ -91,13 +91,13 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - SEMAPHORE_DB_USER=semaphore
-      - SEMAPHORE_DB_PASS=semaphore
+      - SEMAPHORE_DB_USER=${SEMAPHORE_DB_USER}
+      - SEMAPHORE_DB_PASS=${SEMAPHORE_DB_PASS}
       - SEMAPHORE_DB_HOST=semaphore-db
       - SEMAPHORE_DB_PORT=5432
       - SEMAPHORE_DB_DIALECT=postgres
-      - SEMAPHORE_DB=semaphore
-      - SEMAPHORE_ADMIN_PASSWORD=admin
+      - SEMAPHORE_DB=${SEMAPHORE_DB_NAME}
+      - SEMAPHORE_ADMIN_PASSWORD=${SEMAPHORE_ADMIN_PASS}
       - SEMAPHORE_ADMIN_NAME=admin
       - SEMAPHORE_ADMIN_EMAIL=admin@example.com
       - SEMAPHORE_ADMIN_USERNAME=admin
@@ -111,9 +111,9 @@ services:
     image: postgres:15-alpine
     container_name: semaphore-db
     environment:
-      - POSTGRES_USER=semaphore
-      - POSTGRES_PASSWORD=semaphore
-      - POSTGRES_DB=semaphore
+      - POSTGRES_USER=${SEMAPHORE_DB_USER}
+      - POSTGRES_PASSWORD=${SEMAPHORE_DB_PASS}
+      - POSTGRES_DB=${SEMAPHORE_DB_NAME}
     volumes:
       - semaphore_db_data:/var/lib/postgresql/data
     networks:
