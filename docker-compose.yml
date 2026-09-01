@@ -38,7 +38,7 @@ services:
     networks:
       - devops_net
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - wikijs-db
 
