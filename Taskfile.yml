@@ -52,6 +52,21 @@ tasks:
     cmds:
       - docker compose -f docker-compose.yml -f docker-compose.ca-trust.yml logs -f
 
+  postgres:backup:15:
+    desc: Export PostgreSQL 15 databases from the retained legacy volumes
+    cmds:
+      - bash scripts/postgres-15-to-18.sh backup
+
+  postgres:restore:18:
+    desc: Initialize PostgreSQL 18 volumes and restore the PostgreSQL 15 exports
+    cmds:
+      - bash scripts/postgres-15-to-18.sh restore
+
+  postgres:verify:18:
+    desc: Verify PostgreSQL 18 versions and restored table counts
+    cmds:
+      - bash scripts/postgres-15-to-18.sh verify
+
   vault-init:
     desc: Initialize HashiCorp Vault
     cmds:

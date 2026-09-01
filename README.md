@@ -32,6 +32,10 @@ task up
 - `task logs` - View logs
 - `task vault-init` - Initialize Vault (first run only)
 
+## Database upgrades
+
+See [PostgreSQL 15 to 18 migration](docs/postgres-15-to-18.md) before deploying the PostgreSQL 18 image over an existing installation.
+
 ## Components
 - **HashiCorp Vault**: Central secret management.
 - **Ansible + Semaphore**: Infrastructure orchestration and automation.
