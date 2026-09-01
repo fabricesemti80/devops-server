@@ -43,7 +43,7 @@ services:
       - wikijs-db
 
   wikijs-db:
-    image: postgres:15-alpine
+    image: postgres:18-alpine
     container_name: wikijs-db
     environment:
       - POSTGRES_USER=${WIKI_DB_USER}
@@ -108,7 +108,7 @@ services:
       - vault
 
   semaphore-db:
-    image: postgres:15-alpine
+    image: postgres:18-alpine
     container_name: semaphore-db
     environment:
       - POSTGRES_USER=${SEMAPHORE_DB_USER}
