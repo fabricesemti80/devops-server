@@ -31,6 +31,27 @@ tasks:
     cmds:
       - docker compose logs -f
 
+  up:ca-trust:
+    desc: Start the stack with the host CA trust bundle mounted in Semaphore
+    cmds:
+      - docker compose -f docker-compose.yml -f docker-compose.ca-trust.yml up -d
+
+  down:ca-trust:
+    desc: Stop and remove the CA-trust-enabled stack
+    cmds:
+      - docker compose -f docker-compose.yml -f docker-compose.ca-trust.yml down
+
+  restart:ca-trust:
+    desc: Restart the stack with the host CA trust bundle mounted in Semaphore
+    cmds:
+      - task: down:ca-trust
+      - task: up:ca-trust
+
+  logs:ca-trust:
+    desc: Tail logs for the CA-trust-enabled stack
+    cmds:
+      - docker compose -f docker-compose.yml -f docker-compose.ca-trust.yml logs -f
+
   vault-init:
     desc: Initialize HashiCorp Vault
     cmds:
