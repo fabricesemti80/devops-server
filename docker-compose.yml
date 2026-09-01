@@ -89,7 +89,7 @@ services:
     image: semaphoreui/semaphore:latest
     container_name: semaphore
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       - SEMAPHORE_DB_USER=${SEMAPHORE_DB_USER}
       - SEMAPHORE_DB_PASS=${SEMAPHORE_DB_PASS}
