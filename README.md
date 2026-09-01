@@ -7,7 +7,11 @@ A pragmatic, quick-start DevOps management server.
 ### 1. Install Go Task (on Ubuntu)
 Task is the automation runner for this repo.
 ```bash
-sh -c "$(curl -sL https://taskfile.dev/install.sh)"
+## for Debian-based:
+curl -1sLf 'https://dl.cloudsmith.io/public/task/task/setup.deb.sh' | sudo -E bash
+apt install task
+
+## for other OS-es see https://taskfile.dev/docs/installation
 ```
 
 ### 2. Environment Setup
