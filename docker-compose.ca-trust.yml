@@ -1,11 +1,15 @@
 # Overlay for hosts that sit behind TLS inspection.
 #
 # Where outbound HTTPS is re-signed by an internal CA, the host trust store
-# carries that CA but container images do not. Mounting the host's assembled
-# bundle lets TLS clients inside Semaphore validate the re-signed certificates.
+# carries that CA but application containers do not. Mounting the host's
+# assembled bundle lets TLS clients validate the re-signed certificates.
 #
 # This overlay is opt-in. Use the ca-trust tasks defined in Taskfile.yml.
 services:
   semaphore:
+    volumes:
+      - ${CA_CERTIFICATE_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}:/etc/ssl/certs/ca-certificates.crt:ro
+
+  wikijs:
     volumes:
       - ${CA_CERTIFICATE_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}:/etc/ssl/certs/ca-certificates.crt:ro
