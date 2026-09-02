@@ -63,6 +63,18 @@ tasks:
       - docker exec semaphore sh -ec 'command -v sshpass >/dev/null && python3 -c "import winrm, requests_ntlm"'
       - echo "Semaphore prerequisites are available."
 
+  semaphore:genkey:
+    desc: Generate a value for SEMAPHORE_ACCESS_KEY_ENCRYPTION (store it in .env AND a password manager)
+    cmds:
+      - openssl rand -base64 32
+      - echo "Put this in .env as SEMAPHORE_ACCESS_KEY_ENCRYPTION and back it up. Losing it makes every stored Semaphore credential unrecoverable."
+
+  semaphore:encryption-check:
+    desc: Verify the running Semaphore is using the pinned access-key encryption key
+    cmds:
+      - docker exec semaphore sh -ec 'test -n "$SEMAPHORE_ACCESS_KEY_ENCRYPTION" || { echo "SEMAPHORE_ACCESS_KEY_ENCRYPTION is not set in the container - secrets will be orphaned on the next recreate"; exit 1; }; grep -qF "$SEMAPHORE_ACCESS_KEY_ENCRYPTION" /etc/semaphore/config.json || { echo "config.json does not contain the pinned key - the container generated its own"; exit 1; }'
+      - echo "Access-key encryption is pinned and matches config.json."
+
   postgres:backup:15:
     desc: Export PostgreSQL 15 databases from the retained legacy volumes
     cmds:

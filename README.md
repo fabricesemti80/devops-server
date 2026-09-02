@@ -21,6 +21,14 @@ cp .env.example .env
 nano .env
 ```
 
+`SEMAPHORE_ACCESS_KEY_ENCRYPTION` has no default and the stack will not start
+without it. Generate one and back it up — see
+[Semaphore access-key encryption](docs/semaphore-access-key-encryption.md):
+
+```bash
+task semaphore:genkey
+```
+
 ### 3. Deploy
 ```bash
 task up
@@ -40,6 +48,15 @@ Verify the running image with:
 
 ```bash
 task semaphore:prereqs
+```
+
+Semaphore's stored credentials are encrypted with a key that must be pinned in
+`.env`, or they are lost on the next container recreate. See
+[Semaphore access-key encryption](docs/semaphore-access-key-encryption.md), and
+verify with:
+
+```bash
+task semaphore:encryption-check
 ```
 
 ## Database upgrades
