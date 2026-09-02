@@ -32,6 +32,16 @@ task up
 - `task logs` - View logs
 - `task vault-init` - Initialize Vault (first run only)
 
+## Semaphore host management
+
+See [Semaphore host-management prerequisites](docs/semaphore-host-prerequisites.md) for Windows WinRM/NTLM and Linux password-auth support.
+
+Verify the running image with:
+
+```bash
+task semaphore:prereqs
+```
+
 ## Database upgrades
 
 See [PostgreSQL 15 to 18 migration](docs/postgres-15-to-18.md) before deploying the PostgreSQL 18 image over an existing installation.
