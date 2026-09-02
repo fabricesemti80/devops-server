@@ -71,6 +71,44 @@ Do not reuse a password or a value from elsewhere, and do not commit it —
 that cannot be rebuilt from this repository. Without it, the contents of the
 database are cryptographically unrecoverable — not inconvenient, gone.
 
+Back up the **`.env` value**, not `/etc/semaphore/config.json`. That file also
+carries the Postgres password, is regenerated on every start, and — see below —
+does not hold the key actually in use. If you do copy it out for any reason,
+delete the copy afterwards; nothing in `.gitignore` covers it.
+
+## Why config.json shows a different key
+
+`/etc/semaphore/config.json` will contain an `access_key_encryption` value that
+**does not match** `.env`. This is expected and harmless, and it is worth
+knowing before it costs you an afternoon.
+
+On every start, the entrypoint runs `semaphore setup`, which generates a fresh
+random key and writes it to `config.json`. The Semaphore binary then loads that
+file and applies environment overrides on top of it. The config struct carries
+both bindings:
+
+```
+AccessKeyEncryption  json:"access_key_encryption,omitempty" env:"SEMAPHORE_ACCESS_KEY_ENCRYPTION,sensitive"
+```
+
+The environment value wins, so `config.json`'s copy is an unused artefact of
+setup. Verified empirically on v2.19.12: with the variable set, Key Store
+entries survive `docker compose up -d --force-recreate semaphore` and remain
+usable, even though `config.json` holds a different value before and after.
+
+The practical consequences:
+
+- **Do not diff `.env` against `config.json`** to check the pin. They differ by
+  design, and treating that as a fault sends you looking for a problem that
+  isn't there.
+- `task semaphore:encryption-check` therefore validates the variable itself —
+  present, valid base64, 32 bytes — and nothing else. That is the whole of what
+  is statically checkable.
+- The only real proof is behavioural: create a Key Store entry, force-recreate
+  the container, and confirm the entry still works. Take a copy of
+  `config.json` first and that test is fully reversible — restore it with
+  `docker cp` and `docker restart semaphore` if anything goes wrong.
+
 Then verify the running container agrees with `.env`:
 
 ```bash

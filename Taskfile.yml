@@ -69,11 +69,17 @@ tasks:
       - openssl rand -base64 32
       - echo "Put this in .env as SEMAPHORE_ACCESS_KEY_ENCRYPTION and back it up. Losing it makes every stored Semaphore credential unrecoverable."
 
+  # Deliberately does NOT compare against /etc/semaphore/config.json. `semaphore
+  # setup` writes a freshly generated key into that file on every start, and the
+  # env var overrides it at runtime — so the two legitimately differ and a
+  # comparison reports a failure that is not one. See
+  # docs/semaphore-access-key-encryption.md.
   semaphore:encryption-check:
-    desc: Verify the running Semaphore is using the pinned access-key encryption key
+    desc: Verify SEMAPHORE_ACCESS_KEY_ENCRYPTION is set in the container and is a valid 32-byte key
     cmds:
-      - docker exec semaphore sh -ec 'test -n "$SEMAPHORE_ACCESS_KEY_ENCRYPTION" || { echo "SEMAPHORE_ACCESS_KEY_ENCRYPTION is not set in the container - secrets will be orphaned on the next recreate"; exit 1; }; grep -qF "$SEMAPHORE_ACCESS_KEY_ENCRYPTION" /etc/semaphore/config.json || { echo "config.json does not contain the pinned key - the container generated its own"; exit 1; }'
-      - echo "Access-key encryption is pinned and matches config.json."
+      - >-
+        docker exec semaphore sh -ec 'test -n "$SEMAPHORE_ACCESS_KEY_ENCRYPTION" || { echo "FAIL: SEMAPHORE_ACCESS_KEY_ENCRYPTION is not set in the container; stored secrets will be orphaned on the next container recreate"; exit 1; }; n=$(printf %s "$SEMAPHORE_ACCESS_KEY_ENCRYPTION" | base64 -d 2>/dev/null | wc -c); test "$n" -eq 32 || { echo "FAIL: key decodes to $n bytes; AES requires 32. Regenerate with: task semaphore:genkey"; exit 1; }'
+      - echo "OK - access-key encryption is pinned to a 32-byte key from .env."
 
   postgres:backup:15:
     desc: Export PostgreSQL 15 databases from the retained legacy volumes

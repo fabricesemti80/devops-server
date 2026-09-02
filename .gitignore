@@ -1,2 +1,6 @@
 .env
 backups/
+
+# Copies of the Semaphore runtime config; carries the encryption key and DB password
+config.json*
+*.bak
