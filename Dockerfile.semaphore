@@ -1,0 +1,14 @@
+ARG SEMAPHORE_BASE_IMAGE=semaphoreui/semaphore:latest
+FROM ${SEMAPHORE_BASE_IMAGE}
+
+USER root
+
+COPY requirements-semaphore.txt /tmp/requirements-semaphore.txt
+
+RUN apk add --no-cache sshpass \
+    && pip3 install --no-cache-dir -r /tmp/requirements-semaphore.txt \
+    && command -v sshpass \
+    && python3 -c "import winrm, requests_ntlm" \
+    && rm /tmp/requirements-semaphore.txt
+
+USER 1001
