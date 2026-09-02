@@ -13,7 +13,7 @@ tasks:
   up:
     desc: Start the stack in detached mode
     cmds:
-      - docker compose up -d
+      - docker compose up -d --build
 
   down:
     desc: Stop and remove containers
@@ -34,7 +34,7 @@ tasks:
   up:ca-trust:
     desc: Start the stack with the host CA trust bundle mounted in Semaphore
     cmds:
-      - docker compose -f docker-compose.yml -f docker-compose.ca-trust.yml up -d
+      - docker compose -f docker-compose.yml -f docker-compose.ca-trust.yml up -d --build
 
   down:ca-trust:
     desc: Stop and remove the CA-trust-enabled stack
@@ -51,6 +51,17 @@ tasks:
     desc: Tail logs for the CA-trust-enabled stack
     cmds:
       - docker compose -f docker-compose.yml -f docker-compose.ca-trust.yml logs -f
+
+  build:semaphore:
+    desc: Pull the base image and rebuild Semaphore host-management dependencies
+    cmds:
+      - docker compose build --pull semaphore
+
+  semaphore:prereqs:
+    desc: Verify WinRM, NTLM and Linux password-auth dependencies
+    cmds:
+      - docker exec semaphore sh -ec 'command -v sshpass >/dev/null && python3 -c "import winrm, requests_ntlm"'
+      - echo "Semaphore prerequisites are available."
 
   postgres:backup:15:
     desc: Export PostgreSQL 15 databases from the retained legacy volumes
