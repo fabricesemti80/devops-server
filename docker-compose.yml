@@ -86,7 +86,12 @@ services:
 
   # --- INFRASTRUCTURE AUTOMATION ---
   semaphore:
-    image: semaphoreui/semaphore:latest
+    image: ${SEMAPHORE_IMAGE:-devops-server/semaphore:local}
+    build:
+      context: .
+      dockerfile: Dockerfile.semaphore
+      args:
+        SEMAPHORE_BASE_IMAGE: ${SEMAPHORE_BASE_IMAGE:-semaphoreui/semaphore:latest}
     container_name: semaphore
     ports:
       - "3000:3000"
