@@ -38,8 +38,24 @@ after the recreate that caused it.
 
 ## Setting it up
 
+Generate a 32-byte random value, base64-encoded:
+
 ```bash
 task semaphore:genkey
+```
+
+Or directly, if Task is not installed yet — `.env` normally gets filled in
+before the rest of the tooling is up:
+
+```bash
+openssl rand -base64 32
+```
+
+Any 32 bytes of cryptographic randomness will do; these are equivalent:
+
+```bash
+head -c 32 /dev/urandom | base64
+python3 -c 'import os,base64; print(base64.b64encode(os.urandom(32)).decode())'
 ```
 
 Put the value in `.env`:
@@ -47,6 +63,9 @@ Put the value in `.env`:
 ```
 SEMAPHORE_ACCESS_KEY_ENCRYPTION=<the generated value>
 ```
+
+Do not reuse a password or a value from elsewhere, and do not commit it —
+`.env` is gitignored; `.env.example` carries the name only.
 
 **Back it up in a password manager.** This is the one piece of Semaphore state
 that cannot be rebuilt from this repository. Without it, the contents of the
